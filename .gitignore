@@ -22,3 +22,6 @@ go.work
 
 # Assets directory
 assets/
+
+#env variable
+.env
