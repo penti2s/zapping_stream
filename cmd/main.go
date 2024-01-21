@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"zapping_stream/internal/auth"
+	"zapping_stream/internal/chat"
 	"zapping_stream/internal/db"
 	"zapping_stream/internal/hls"
 )
@@ -22,10 +23,11 @@ func main() {
 	}
 
 	hls.SetupUpdater()
-
+	// STREAMING
 	http.HandleFunc("/hls/playlist.m3u8", enableCors(hls.ServePlaylist))
 	http.HandleFunc("/hls/", enableCors(hls.ServeSegment))
 
+	//AUTH
 	http.HandleFunc("/api/auth/register", enableCors(func(w http.ResponseWriter, r *http.Request) {
 		token, err := auth.Register(r)
 		if err != nil {
@@ -36,7 +38,6 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(jsonResponse)
 	}))
-
 	http.HandleFunc("/api/auth/login", enableCors(func(w http.ResponseWriter, r *http.Request) {
 		token, err := auth.Login(r)
 		if err != nil {
@@ -50,6 +51,8 @@ func main() {
 	http.HandleFunc("/api/auth/user", enableCors(auth.UserHandler))
 	http.HandleFunc("/api/auth/logout", enableCors(auth.LogoutHandler))
 
+	// CHAT
+	http.HandleFunc("/chat", chat.HandleConnections)
 	log.Println("Servidor iniciado en http://localhost:8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
