@@ -66,13 +66,22 @@ func modifyPlaylist(lines []string) ([]string, int) {
 	}
 
 	mediaSequence++
-	nextSegment := fmt.Sprintf("#EXTINF:%s,\nsegment%d.ts", targetDuration, mediaSequence-1)
+	nextSegmentFile := fmt.Sprintf("segment%d.ts", mediaSequence-1)
+	nextSegmentPath := fmt.Sprintf("assets/hls/%s", nextSegmentFile)
+
+	if !segmentExists(nextSegmentPath) {
+		mediaSequence = 1
+		nextSegmentFile = "segment0.ts"
+	}
+
+	nextSegment := fmt.Sprintf("#EXTINF:%s,\n%s", targetDuration, nextSegmentFile)
 	segments = append(segments, nextSegment)
 
 	if len(segments) > 6 {
 		segments = segments[2:]
 	}
 
+	// Actualiza la secuencia de medios en el encabezado
 	for i, line := range header {
 		if strings.HasPrefix(line, "#EXT-X-MEDIA-SEQUENCE:") {
 			header[i] = fmt.Sprintf("#EXT-X-MEDIA-SEQUENCE:%d", mediaSequence)
@@ -81,4 +90,11 @@ func modifyPlaylist(lines []string) ([]string, int) {
 	}
 
 	return append(header, segments...), mediaSequence
+}
+
+func segmentExists(segmentPath string) bool {
+	if _, err := os.Stat(segmentPath); os.IsNotExist(err) {
+		return false
+	}
+	return true
 }
