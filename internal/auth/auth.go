@@ -125,3 +125,19 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonResponse)
 }
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	// Establecer un header que indique al cliente borrar el token
+	w.Header().Set("Token-Expired", "true")
+
+	response := map[string]string{"message": "Has cerrado sesión correctamente."}
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Error al procesar la respuesta", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonResponse)
+}

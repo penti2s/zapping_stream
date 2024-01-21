@@ -48,6 +48,7 @@ func main() {
 		json.NewEncoder(w).Encode(jsonResponse)
 	}))
 	http.HandleFunc("/api/auth/user", enableCors(auth.UserHandler))
+	http.HandleFunc("/api/auth/logout", enableCors(auth.LogoutHandler))
 
 	log.Println("Servidor iniciado en http://localhost:8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
