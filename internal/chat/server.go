@@ -1,9 +1,10 @@
 package chat
 
 import (
-	"github.com/gorilla/websocket"
 	"net/http"
 	"sync"
+
+	"github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{
@@ -22,7 +23,6 @@ func HandleConnections(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	// Registrar la nueva conexión.
 	mutex.Lock()
 	clients[conn] = true
 	mutex.Unlock()
@@ -30,7 +30,6 @@ func HandleConnections(w http.ResponseWriter, r *http.Request) {
 	for {
 		messageType, p, err := conn.ReadMessage()
 		if err != nil {
-			// Eliminar la conexión cuando se cierra o cuando ocurre un error.
 			mutex.Lock()
 			delete(clients, conn)
 			mutex.Unlock()
@@ -45,7 +44,6 @@ func broadcastMessage(messageType int, p []byte) {
 	defer mutex.Unlock()
 	for client := range clients {
 		if err := client.WriteMessage(messageType, p); err != nil {
-			// Eliminar la conexión si hay un error al enviar el mensaje.
 			delete(clients, client)
 			client.Close()
 		}

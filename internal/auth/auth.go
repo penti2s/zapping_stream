@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"os"
 	"zapping_stream/internal/db"
 	"zapping_stream/internal/model"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type RegisterRequest struct {
@@ -91,17 +92,14 @@ func Login(r *http.Request) (string, error) {
 }
 
 func UserHandler(w http.ResponseWriter, r *http.Request) {
-	// Extraer el token JWT de la solicitud
 	tokenString := r.Header.Get("Authorization")
 
-	// Validar el token y obtener los claims
 	claims, err := ValidateToken(tokenString)
 	if err != nil {
 		http.Error(w, "Token inválido", http.StatusUnauthorized)
 		return
 	}
 
-	// Buscar información del usuario en la base de datos
 	var user model.User
 	if err := db.GetDB().First(&user, claims.UserID).Error; err != nil {
 		http.Error(w, "Usuario no encontrado", http.StatusNotFound)
@@ -112,10 +110,8 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 		ID:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,
-		// Completa con otros campos necesarios
 	}
 
-	// Devolver la información del usuario
 	jsonResponse, err := json.Marshal(userResponse)
 	if err != nil {
 		http.Error(w, "Error al procesar la respuesta", http.StatusInternalServerError)
@@ -127,7 +123,6 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	// Establecer un header que indique al cliente borrar el token
 	w.Header().Set("Token-Expired", "true")
 
 	response := map[string]string{"message": "Has cerrado sesión correctamente."}

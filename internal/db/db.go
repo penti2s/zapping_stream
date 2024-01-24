@@ -2,10 +2,11 @@ package db
 
 import (
 	"fmt"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"os"
 	"zapping_stream/internal/model"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
@@ -27,7 +28,6 @@ func InitDB() error {
 		return err
 	}
 
-	// Ejecutar migraciones automáticas
 	err = DB.AutoMigrate(&model.User{})
 	if err != nil {
 		return err

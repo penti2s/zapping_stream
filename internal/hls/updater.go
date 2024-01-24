@@ -13,7 +13,6 @@ func SetupUpdater() {
 }
 
 func updatePlaylistPeriodically() {
-
 	fmt.Println("Esperando...")
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
@@ -23,7 +22,6 @@ func updatePlaylistPeriodically() {
 		case <-ticker.C:
 			err := updatePlaylist()
 			if err != nil {
-				// Manejar el error, posiblemente con un log
 				fmt.Printf("Error: %v\n", err)
 			}
 		}
@@ -33,7 +31,6 @@ func updatePlaylistPeriodically() {
 func updatePlaylist() error {
 	m3u8Path := "assets/hls/segment.m3u8"
 
-	// Leer el archivo .m3u8 actual
 	file, err := os.ReadFile(m3u8Path)
 	if err != nil {
 		return err
@@ -81,7 +78,6 @@ func modifyPlaylist(lines []string) ([]string, int) {
 		segments = segments[2:]
 	}
 
-	// Actualiza la secuencia de medios en el encabezado
 	for i, line := range header {
 		if strings.HasPrefix(line, "#EXT-X-MEDIA-SEQUENCE:") {
 			header[i] = fmt.Sprintf("#EXT-X-MEDIA-SEQUENCE:%d", mediaSequence)
