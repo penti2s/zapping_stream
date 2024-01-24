@@ -15,7 +15,7 @@ RUN go mod download
 COPY . .
 
 # Compila la aplicación
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o zapping_stream ./cmd
+RUN CGO_ENABLED=0 GOOS=linux go build -buildvcs=false -a -installsuffix cgo -o zapping_stream ./cmd
 
 # Etapa de ejecución
 FROM alpine:latest  
