@@ -36,7 +36,10 @@ func updatePlaylist() error {
 		return err
 	}
 
-	lines := strings.Split(string(file), "\n")
+	// Normaliza los finales de línea a \n
+	normalizedContent := strings.ReplaceAll(string(file), "\r\n", "\n")
+
+	lines := strings.Split(normalizedContent, "\n")
 	updatedLines, _ := modifyPlaylist(lines)
 
 	return os.WriteFile(m3u8Path, []byte(strings.Join(updatedLines, "\n")), 0666)
